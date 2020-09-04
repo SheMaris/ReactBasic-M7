@@ -17,23 +17,30 @@ class Board extends React.Component {
   }
 
   render() {
+    let rows = [];
+    for(var col = 0; col < 3; col++){
+      let squares = [];
+      for(var field = 0; field < 3; field++){
+        squares.push(this.renderSquare(3*col+field));
+      }
+      rows.push(<div className="board-row" key={col + 'someId'}>{squares}</div>);
+    }
     return (
+      /* //Another option using map inside return
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+      {[0,1,2].map(i => {
+        return (
+          <div className="board-row">
+            {[0,1,2].map(j => {
+              return this.renderSquare(3*i + j)
+            })}
+          </div>
+        );
+      })}
+      </div>
+      */
+      <div> 
+        {rows} 
       </div>
     );
   }
