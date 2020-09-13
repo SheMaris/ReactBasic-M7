@@ -58,29 +58,41 @@ class Game extends React.Component {
       stepNumber: 0,
       xIsNext: true,
       history_positions: Array(9).fill(null),
-      boldMove: ""
+      boldMove: "",
+      reverse: false
     };
   }
-
+  
+  
   handleClick(i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    //When history sorted desc we will change history order at the beggining and ending of the methods to treat the history the same way as if it was sorted asc
+    const history = this.state.reverse ? this.state.history.reverse().slice(0, this.state.stepNumber + 1) : this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
     const history_positions = this.state.history_positions;
     history_positions[this.state.stepNumber+1] = coordinates_ar[i];
     if (calculateWinner(squares) || squares[i]) {
+      this.setState({
+      history: this.state.reverse ? history.reverse() : history
+    });
       return;
     }
     squares[i] = this.state.xIsNext ? "X" : "O";
+    
     this.setState({
-      history: history.concat([
-        {
-          squares: squares
-        }
-      ]),
+      history: this.state.reverse ? history.concat([{squares: squares}]).reverse() : history.concat([{squares: squares}]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
       history_positions: history_positions
+    });
+  }
+  
+  
+  
+  reverseMoves(){
+    this.setState({
+      reverse: this.state.reverse ? false : true,
+      history: this.state.history.reverse()
     });
   }
 
@@ -95,11 +107,15 @@ class Game extends React.Component {
   }
 
   render() {
-    const history = this.state.history;
-    const current = history[this.state.stepNumber];
+    var history = this.state.history;
+    const is_reverse = this.state.reverse;
+    const current = is_reverse ? history[history.length - 1 - this.state.stepNumber] : history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-    const history_positions = this.state.history_positions;
+const history_positions = this.state.history_positions;
     const moves = history.map((step, move) => {
+      if (is_reverse) {
+        move = history.length - 1 - move;
+      }
       const desc = move ?
         'Go to move #' + move +' '+history_positions[move]:
         'Go to game start';
@@ -126,6 +142,7 @@ class Game extends React.Component {
           />
         </div>
         <div className="game-info">
+          <button onClick={() => this.reverseMoves()}>{this.state.reverse ? 'Sort asc':'Sort desc' }</button>
           <div>{status}</div>
           <ol>{moves}</ol>
         </div>
