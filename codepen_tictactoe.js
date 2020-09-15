@@ -132,6 +132,9 @@ const history_positions = this.state.history_positions;
       status = "Winner: " + winner;
     } else {
       status = "Next player: " + (this.state.xIsNext ? "X" : "O");
+      if (this.state.stepNumber == 9){
+        status = "Empate";
+      }
     }
 
     return (
